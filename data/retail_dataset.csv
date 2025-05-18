@@ -1,0 +1,11 @@
+question,intent,sql
+What are the top 5 selling products in March?,summary,"SELECT product_name, SUM(quantity) AS total_sold FROM transactions WHERE MONTH(date) = 3 GROUP BY product_name ORDER BY total_sold DESC LIMIT 5;"
+Which store had the highest revenue in April?,summary,"SELECT store_id, SUM(total_price) AS revenue FROM transactions WHERE MONTH(date) = 4 GROUP BY store_id ORDER BY revenue DESC LIMIT 1;"
+Compare returns between electronics and clothing in Q1.,comparison,"SELECT category, COUNT(*) AS return_count FROM returns WHERE category IN ('electronics', 'clothing') AND QUARTER(date) = 1 GROUP BY category;"
+Which products saw a sales drop compared to last month?,anomaly,"SELECT t1.product_id, t1.month, t1.sales, t2.sales AS last_month_sales FROM monthly_sales t1 JOIN monthly_sales t2 ON t1.product_id = t2.product_id AND t1.month = t2.month + 1 WHERE t1.sales < t2.sales;"
+Show the sales trend of iPhone 14 in the last 6 months.,trend,"SELECT MONTH(date) AS month, SUM(quantity) AS total_sales FROM transactions WHERE product_name = 'iPhone 14' AND date >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH) GROUP BY month ORDER BY month;"
+Which category has the highest number of returns?,summary,"SELECT category, COUNT(*) AS total_returns FROM returns GROUP BY category ORDER BY total_returns DESC LIMIT 1;"
+What is the total sales for each product category?,summary,"SELECT category, SUM(total_price) AS total_sales FROM transactions GROUP BY category;"
+List the most returned products in the last month.,summary,"SELECT product_name, COUNT(*) AS return_count FROM returns WHERE date >= DATE_SUB(CURDATE(), INTERVAL 1 MONTH) GROUP BY product_name ORDER BY return_count DESC;"
+Which store had the lowest performance in Q2?,summary,"SELECT store_id, SUM(total_price) AS total_sales FROM transactions WHERE QUARTER(date) = 2 GROUP BY store_id ORDER BY total_sales ASC LIMIT 1;"
+What are the top 3 most popular products in electronics?,summary,"SELECT product_name, SUM(quantity) AS total_sold FROM transactions WHERE category = 'electronics' GROUP BY product_name ORDER BY total_sold DESC LIMIT 3;"

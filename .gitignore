@@ -1,0 +1,13 @@
+.DS_Store
+google-cloud-sdk*
+model_intent_classifier/
+model_sqlgen_t5/
+results_intent/
+results_t5_sqlgen/
+logs/
+logs_intent/
+*.png
+.venv/
+__pycache__/
+*.pyc
+env/
