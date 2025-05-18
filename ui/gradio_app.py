@@ -86,7 +86,7 @@ retail_data = {
             "2023-04-05",
             "2023-04-10",
         ]
-    ),
+    ), 
 }
 sample_df = pd.DataFrame(retail_data)
 
