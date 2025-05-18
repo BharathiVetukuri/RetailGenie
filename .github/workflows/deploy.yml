@@ -1,0 +1,39 @@
+name: Deploy and Train
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt
+
+      - name: Train SQL Generator Model
+        run: |
+          source venv/bin/activate
+          python code/train_sqlgen_t5_local.py
+
+      - name: Train Intent Classifier Model
+        run: |
+          source venv/bin/activate
+          python code/train_intent_classifier_local.py
+
+      - name: Run Gradio App
+        run: |
+          source venv/bin/activate
+          python ui/gradio_app.py
