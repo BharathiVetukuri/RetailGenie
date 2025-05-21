@@ -23,6 +23,26 @@ RetailGenie is an end-to-end deep learning + MLOps project that allows retail ma
 - Real-time inference + chart generation
 - BLEU, accuracy, confusion matrix visualizations
 
+## Screenshots
+
+### Azure ML Pipeline
+![Azure ML Pipeline](https://github.com/BharathiVetukuri/RetailGenie/blob/main/assets/images/AZURESS1.png)
+*Screenshot shows our successfully deployed Azure ML pipeline with connected dataset and training steps*
+
+### Full-Stack ML Application
+![RetailGenie Dashboard](https://github.com/BharathiVetukuri/RetailGenie/blob/main/assets/images/SS1.png)
+*Main dashboard of the RetailGenie application showing the query interface and visualization panel*
+
+![Query Processing](https://github.com/BharathiVetukuri/RetailGenie/blob/main/assets/images/SS2.png)
+*Natural language query being processed by our model with SQL generation*
+
+![Data Visualization](https://github.com/BharathiVetukuri/RetailGenie/blob/main/assets/images/SS3.png)
+*Interactive visualization of query results with charts and insights*
+
+![Model Performance](https://github.com/BharathiVetukuri/RetailGenie/blob/main/assets/images/SS4.png)
+*Performance metrics and model evaluation dashboard*
+
+
 ## 📊 Dataset Sample
 
 See `data/retail_dataset.csv` and `data/retail_schema.sql`
@@ -164,24 +184,4 @@ Deploy with traffic split
 You can find them under:
 https://console.cloud.google.com/vertex-ai/endpoints
 
-## Screenshots
-
-### Azure ML Pipeline
-![Azure ML Pipeline](https://github.com/BharathiVetukuri/RetailGenie/assets/108571427/azuress1-image)
-*Screenshot shows our successfully deployed Azure ML pipeline with connected dataset and training steps*
-
-### Full-Stack ML Application
-![RetailGenie Dashboard](https://github.com/BharathiVetukuri/RetailGenie/assets/108571427/ss1-image)
-*Main dashboard of the RetailGenie application showing the query interface and visualization panel*
-
-![Query Processing](https://github.com/BharathiVetukuri/RetailGenie/assets/108571427/ss2-image)
-*Natural language query being processed by our model with SQL generation*
-
-![Data Visualization](https://github.com/BharathiVetukuri/RetailGenie/assets/108571427/ss3-image)
-*Interactive visualization of query results with charts and insights*
-
-![Model Performance](https://github.com/BharathiVetukuri/RetailGenie/assets/108571427/ss4-image)
-*Performance metrics and model evaluation dashboard*
-
-> **Note:** You will need to replace the image IDs after uploading your images to GitHub using the "Issues" tab upload feature.
 ```
