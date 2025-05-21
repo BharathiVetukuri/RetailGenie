@@ -10,7 +10,7 @@ huggingface-hub
 sentencepiece
 tokenizers
 tqdm
-pillow==11.2.1
+pillow
 aiohttp
 sqlparse
 azure-cli
