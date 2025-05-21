@@ -92,10 +92,6 @@ This will start the Gradio web interface where you can ask retail questions and 
 
 The model files are not included in this repository. You must train the models (steps 3-4) before running the application.
 
-## 🤖 Team Contributions
-
-To be filled...
-
 ---
 
 ## ⚙️ Setup Instructions
