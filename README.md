@@ -163,4 +163,25 @@ Deploy with traffic split
 ## 🔗 Endpoints will be created in Vertex AI
 You can find them under:
 https://console.cloud.google.com/vertex-ai/endpoints
+
+## Screenshots
+
+### Azure ML Pipeline
+![Azure ML Pipeline](https://github.com/BharathiVetukuri/RetailGenie/assets/108571427/azuress1-image)
+*Screenshot shows our successfully deployed Azure ML pipeline with connected dataset and training steps*
+
+### Full-Stack ML Application
+![RetailGenie Dashboard](https://github.com/BharathiVetukuri/RetailGenie/assets/108571427/ss1-image)
+*Main dashboard of the RetailGenie application showing the query interface and visualization panel*
+
+![Query Processing](https://github.com/BharathiVetukuri/RetailGenie/assets/108571427/ss2-image)
+*Natural language query being processed by our model with SQL generation*
+
+![Data Visualization](https://github.com/BharathiVetukuri/RetailGenie/assets/108571427/ss3-image)
+*Interactive visualization of query results with charts and insights*
+
+![Model Performance](https://github.com/BharathiVetukuri/RetailGenie/assets/108571427/ss4-image)
+*Performance metrics and model evaluation dashboard*
+
+> **Note:** You will need to replace the image IDs after uploading your images to GitHub using the "Issues" tab upload feature.
 ```
