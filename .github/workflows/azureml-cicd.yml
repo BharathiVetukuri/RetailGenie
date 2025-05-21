@@ -1,0 +1,42 @@
+name: AzureML CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+
+      - name: Install Azure CLI
+        uses: azure/cli@v1
+
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Install dependencies
+        run: |
+          pip install azureml-core azureml-sdk
+
+      - name: Create CPU compute target
+        run: |
+          python create_compute.py
+
+      - name: Run Azure ML pipeline
+        run: |
+          python run_pipeline.py
+
+      # Optional: Deploy model as web service if you have a deployment script
+      # - name: Deploy model
+      #   run: |
+      #     python deploy_model.py

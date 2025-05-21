@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 name: retailgenie
 channels:
   - pytorch
@@ -28,3 +29,26 @@ dependencies:
       - pydantic==2.11.4
       - pyyaml==6.0.2
       - tqdm==4.67.1
+=======
+name: retailgenie-env
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.9
+  - pip=23.0
+  - pip:
+      - transformers==4.30.2
+      - torch==2.0.1
+      - pandas==2.0.3
+      - numpy==1.24.3
+      - scikit-learn==1.3.0
+      - matplotlib==3.7.2
+      - gradio==3.40.1
+      - azureml-sdk==1.50.0
+      - azure-storage-blob==12.17.0
+      - azure-identity==1.13.0
+      - azure-keyvault-secrets==4.7.0
+      - azure-ml==1.0.0
+      - python-dotenv==1.0.0
+>>>>>>> adcb741 (ci/cd updated)

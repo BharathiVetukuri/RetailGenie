@@ -1,0 +1,57 @@
+{
+  "name": "retailgenie-deployment",
+  "description": "RetailGenie model deployment for SQL generation and intent classification",
+  "compute": {
+    "name": "retailgenie-cluster",
+    "type": "amlcompute",
+    "size": "Standard_NC6",
+    "min_nodes": 1,
+    "max_nodes": 2,
+    "idle_seconds_before_scaledown": 300
+  },
+  "environment": {
+    "name": "retailgenie-env",
+    "conda_file": "environment.yml",
+    "image": "mcr.microsoft.com/azureml/openmpi4.1.0-ubuntu20.04:latest"
+  },
+  "model": {
+    "sql_model": {
+      "name": "retailgenie-sqlgen",
+      "version": "1",
+      "path": "model_sqlgen_t5"
+    },
+    "intent_model": {
+      "name": "retailgenie-intent",
+      "version": "1",
+      "path": "model_intent_classifier"
+    }
+  },
+  "entry_script": "code/inference.py",
+  "scoring_uri": "https://retailgenie-endpoint.azurewebsites.net/api/score",
+  "auth_enabled": true,
+  "traffic_rules": {
+    "default": 100
+  },
+  "monitoring": {
+    "enabled": true,
+    "data_collection": {
+      "enabled": true,
+      "sampling_rate": 0.1
+    },
+    "alerts": {
+      "enabled": true,
+      "conditions": [
+        {
+          "metric": "RequestLatency",
+          "threshold": 1000,
+          "operator": "GreaterThan"
+        },
+        {
+          "metric": "FailedRequests",
+          "threshold": 5,
+          "operator": "GreaterThan"
+        }
+      ]
+    }
+  }
+}

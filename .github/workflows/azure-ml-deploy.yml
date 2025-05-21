@@ -1,0 +1,59 @@
+name: Azure ML Model Training and Deployment
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  AZURE_WORKSPACE_NAME: retailgenie-workspace
+  AZURE_RESOURCE_GROUP: retailgenie-rg
+  AZURE_LOCATION: eastus
+
+jobs:
+  train-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.9"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install azure-cli azure-ml
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Train SQL Generator Model
+        run: |
+          python code/train_sqlgen_t5_local.py
+
+      - name: Train Intent Classifier Model
+        run: |
+          python code/train_intent_classifier_local.py
+
+      - name: Deploy to Azure ML
+        run: |
+          # Create Azure ML workspace if it doesn't exist
+          az ml workspace create -n ${{ env.AZURE_WORKSPACE_NAME }} -g ${{ env.AZURE_RESOURCE_GROUP }} -l ${{ env.AZURE_LOCATION }}
+
+          # Register models
+          az ml model register -n retailgenie-sqlgen -p model_sqlgen_t5
+          az ml model register -n retailgenie-intent -p model_intent_classifier
+
+          # Create deployment configuration
+          az ml model deploy -n retailgenie-deployment \
+            --model retailgenie-sqlgen retailgenie-intent \
+            --compute-target retailgenie-cluster \
+            --entry-script code/inference.py \
+            --environment-file environment.yml
