@@ -1,0 +1,240 @@
+name: Train and Deploy to Azure ML
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  train-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.8"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install azureml-sdk azure-identity
+
+      - name: Configure Azure credentials
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Create AzureML config
+        run: |
+          mkdir -p .azureml
+          echo '{
+            "subscription_id": "${{ secrets.AZURE_SUBSCRIPTION_ID }}",
+            "resource_group": "retailgenie-rg",
+            "workspace_name": "retailgenie-workspace"
+          }' > .azureml/config.json
+
+      - name: Train model locally
+        run: |
+          python -c "
+          import pandas as pd
+          import pickle
+          from sklearn.ensemble import RandomForestClassifier
+          from sklearn.metrics import accuracy_score
+          from sklearn.model_selection import train_test_split
+
+          # Create dummy data for quick training
+          df = pd.DataFrame({
+              'feature1': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+              'feature2': [10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+              'target': [0, 0, 0, 0, 0, 1, 1, 1, 1, 1]
+          })
+
+          # Split data
+          X = df[['feature1', 'feature2']]
+          y = df['target']
+          X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+          # Train a simple model
+          model = RandomForestClassifier(n_estimators=10)
+          model.fit(X_train, y_train)
+
+          # Evaluate model
+          y_pred = model.predict(X_test)
+          accuracy = accuracy_score(y_test, y_pred)
+          print(f'Model accuracy: {accuracy}')
+
+          # Save model
+          with open('model.pkl', 'wb') as f:
+              pickle.dump(model, f)
+
+          print('Model saved to model.pkl')
+          "
+
+      - name: Register model in Azure ML
+        run: |
+          python -c "
+          from azureml.core import Workspace, Model
+          import os
+
+          # Connect to workspace
+          ws = Workspace.from_config()
+          print(f'Connected to workspace: {ws.name}')
+
+          # Register model
+          model = Model.register(
+              workspace=ws,
+              model_path='model.pkl',
+              model_name='retailgenie-model',
+              description='Model trained in GitHub Actions',
+              tags={'source': 'github-actions', 'run_id': '${{ github.run_id }}'}
+          )
+
+          print(f'Model registered: {model.name}, version: {model.version}')
+
+          # Save model info for next steps
+          with open('model_info.txt', 'w') as f:
+              f.write(f'{model.name}:{model.version}')
+          "
+
+      - name: Create scoring script
+        run: |
+          cat > score.py << 'EOL'
+          import json
+          import numpy as np
+          import pickle
+          import os
+          from azureml.core.model import Model
+
+          def init():
+              global model
+              model_path = Model.get_model_path('retailgenie-model')
+              with open(model_path, 'rb') as f:
+                  model = pickle.load(f)
+
+          def run(raw_data):
+              try:
+                  data = json.loads(raw_data)['data']
+                  data = np.array(data)
+                  result = model.predict(data)
+                  return json.dumps({"result": result.tolist()})
+              except Exception as e:
+                  return json.dumps({"error": str(e)})
+          EOL
+
+      - name: Deploy model to ACI
+        run: |
+          python -c "
+          from azureml.core import Workspace, Model
+          from azureml.core.environment import Environment
+          from azureml.core.model import InferenceConfig
+          from azureml.core.webservice import AciWebservice
+
+          # Connect to workspace
+          ws = Workspace.from_config()
+
+          # Get model info from previous step
+          with open('model_info.txt', 'r') as f:
+              model_info = f.read().strip()
+
+          model_name, model_version = model_info.split(':')
+          model = Model(ws, name=model_name, version=int(model_version))
+
+          # Create environment
+          env = Environment.from_conda_specification(
+              name='deployment-env',
+              file_path='environment.yml' if os.path.exists('environment.yml') else None
+          )
+
+          if not os.path.exists('environment.yml'):
+              env.python.conda_dependencies.add_pip_package('scikit-learn')
+              env.python.conda_dependencies.add_pip_package('azureml-defaults')
+
+          # Create inference config
+          inference_config = InferenceConfig(
+              entry_script='score.py',
+              environment=env
+          )
+
+          # Deploy to ACI
+          deployment_config = AciWebservice.deploy_configuration(
+              cpu_cores=1,
+              memory_gb=1,
+              auth_enabled=True,
+              enable_app_insights=True,
+              description='Deployed from GitHub Actions'
+          )
+
+          service = Model.deploy(
+              workspace=ws,
+              name='retailgenie-endpoint',
+              models=[model],
+              inference_config=inference_config,
+              deployment_config=deployment_config,
+              overwrite=True
+          )
+
+          service.wait_for_deployment(show_output=True)
+
+          # Output endpoint URL and auth keys
+          print(f'Service deployed: {service.name}')
+          print(f'Scoring URI: {service.scoring_uri}')
+          print(f'Swagger URI: {service.swagger_uri}')
+
+          # Save endpoint info
+          with open('endpoint_info.json', 'w') as f:
+              import json
+              json.dump({
+                  'name': service.name,
+                  'scoring_uri': service.scoring_uri,
+                  'swagger_uri': service.swagger_uri
+              }, f)
+          "
+
+      - name: Test deployed endpoint
+        run: |
+          python -c "
+          import requests
+          import json
+
+          # Load endpoint info
+          with open('endpoint_info.json', 'r') as f:
+              endpoint_info = json.load(f)
+
+          # Get scoring URI
+          scoring_uri = endpoint_info['scoring_uri']
+
+          # Get access token from Azure ML
+          from azureml.core import Workspace
+          ws = Workspace.from_config()
+          service = ws.webservices[endpoint_info['name']]
+          access_token = service.get_keys()[0]
+
+          # Sample data for prediction
+          data = {
+              'data': [[5, 50], [8, 80]]
+          }
+
+          # Make prediction
+          headers = {
+              'Content-Type': 'application/json',
+              'Authorization': f'Bearer {access_token}'
+          }
+
+          resp = requests.post(scoring_uri, json=data, headers=headers)
+
+          if resp.status_code == 200:
+              print(f'Prediction result: {resp.json()}')
+              print('Endpoint test successful!')
+          else:
+              print(f'Error: {resp.status_code}')
+              print(resp.text)
+          "
+
+      - name: Summarize deployment
+        run: |
+          echo "Training and deployment completed successfully!"
+          echo "Model is now deployed as an endpoint in Azure ML."
+          echo "You can view it in the Azure ML Studio under Endpoints."

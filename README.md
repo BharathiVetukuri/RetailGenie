@@ -164,47 +164,38 @@ Deploy with traffic split
 You can find them under:
 https://console.cloud.google.com/vertex-ai/endpoints
 
-# RetailGenie Azure ML CI/CD Pipeline
+# RetailGenie CI/CD to Azure ML
 
-This repository contains a CI/CD pipeline that automates the deployment of RetailGenie models to Azure Machine Learning.
+This repository contains code that trains and deploys a model to Azure Machine Learning as part of a CI/CD pipeline using GitHub Actions.
 
-## Pipeline Architecture
+## Architecture
 
-The CI/CD pipeline automates the following steps:
+This project implements a modern MLOps approach:
 
-1. **Training Pipeline Submission**: Submits a pipeline to Azure ML that trains the RetailGenie models.
-2. **Model Registration**: Registers the trained models in Azure ML Model Registry.
-3. **Model Deployment**: Deploys the trained models as endpoints for inference.
+1. **CI/CD with GitHub Actions**: The model is trained, tested, and deployed automatically when code is pushed.
+2. **Model Training**: A simple model is trained directly in the GitHub Actions workflow.
+3. **Model Registration**: The trained model is registered in the Azure ML Model Registry.
+4. **Model Deployment**: The model is deployed as an Azure Container Instance (ACI) endpoint.
+5. **Endpoint Testing**: The deployed endpoint is tested to ensure it's working correctly.
 
-## Components
+## Setup
 
-- **run_pipeline.py**: Defines and submits the Azure ML pipeline.
-- **register_model.py**: Registers trained models in Azure ML.
-- **deploy_model.py**: Deploys registered models as endpoints.
-- **score.py**: Scoring script used for model inference.
-- **.github/workflows/azure-ml-pipeline.yml**: GitHub Actions workflow that orchestrates the CI/CD process.
+### Prerequisites
 
-## Requirements
-
-To use this CI/CD pipeline, you need:
+To use this pipeline, you need:
 
 1. An Azure subscription
-2. Azure ML workspace ("retailgenie-workspace")
-3. Azure resource group ("retailgenie-rg")
-4. Compute target set up in Azure ML ("retailgenie-cluster")
-5. GitHub repository with the proper Azure credentials set up as secrets
+2. An Azure Machine Learning workspace
+3. GitHub repository with GitHub Actions enabled
 
-## GitHub Secrets Required
+### GitHub Secrets
 
-The following secrets need to be set up in your GitHub repository:
+You need to set up the following secrets in your GitHub repository:
 
 - `AZURE_CREDENTIALS`: Service principal credentials for Azure authentication
-- `AZURE_SUBSCRIPTION_ID`: Azure subscription ID
-- `AZURE_CLIENT_ID`: Service principal client ID
-- `AZURE_CLIENT_SECRET`: Service principal client secret
-- `AZURE_TENANT_ID`: Azure tenant ID
+- `AZURE_SUBSCRIPTION_ID`: Your Azure subscription ID
 
-## How to Set Up Azure Service Principal
+### Creating Azure Service Principal
 
 1. Create a service principal with contributor access to your Azure ML workspace:
 
@@ -216,25 +207,35 @@ az ad sp create-for-rbac --name "retailgenie-sp" --role contributor \
 
 2. Use the output JSON as the value for the `AZURE_CREDENTIALS` secret in GitHub.
 
-## Viewing Results in Azure ML
+## Workflow
 
-After the pipeline runs successfully:
+The GitHub Actions workflow performs the following steps:
 
-1. **Pipelines**: View your pipeline runs in Azure ML Studio under "Pipelines".
-2. **Models**: Find your registered models under "Models".
-3. **Endpoints**: Access your deployed models under "Endpoints".
+1. **Environment Setup**: Sets up Python and installs necessary packages
+2. **Model Training**: Trains a RandomForest classifier on sample data
+3. **Model Registration**: Registers the trained model in Azure ML
+4. **Scoring Script Creation**: Creates a scoring script for model deployment
+5. **Model Deployment**: Deploys the model as an ACI endpoint
+6. **Endpoint Testing**: Tests the deployed endpoint with sample data
 
-## Manual Execution
+## Viewing Results
 
-You can manually trigger the CI/CD pipeline from the GitHub Actions tab using the "workflow_dispatch" event.
+After the workflow runs successfully:
+
+1. **Models**: View your registered models in Azure ML Studio under "Models"
+2. **Endpoints**: Access your deployed models under "Endpoints"
 
 ## Customization
 
-To customize the pipeline for your specific needs:
+To customize the workflow:
 
-1. Modify `run_pipeline.py` to adjust training parameters or steps.
-2. Update `score.py` to match your model's input/output requirements.
-3. Edit `.github/workflows/azure-ml-pipeline.yml` to change the CI/CD workflow.
+1. Replace the sample model training code with your own training script
+2. Adjust the scoring script to match your model's requirements
+3. Modify deployment configurations as needed
+
+## Manual Execution
+
+You can manually trigger the workflow from the GitHub Actions tab using the "workflow_dispatch" event.
 
 ```
 
