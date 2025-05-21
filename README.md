@@ -23,25 +23,35 @@ RetailGenie is an end-to-end deep learning + MLOps project that allows retail ma
 - Real-time inference + chart generation
 - BLEU, accuracy, confusion matrix visualizations
 
+## 🤖 Model Training & Datasets
+
+For our SQL generation model, we fine-tuned the T5-small architecture on high-quality text-to-SQL datasets:
+
+- [Clinton/Text-to-sql-v1](https://huggingface.co/datasets/Clinton/Text-to-sql-v1) - A comprehensive dataset with 262k examples of natural language questions paired with SQL queries
+- [b-mc2/sql-create-context](https://huggingface.co/datasets/b-mc2/sql-create-context) - Contains detailed SQL context with CREATE TABLE statements that helped our model understand database schemas
+
+The combination of these datasets allowed our T5 model to effectively translate natural language retail questions into accurate SQL queries while understanding the underlying database structure. Our training approach focused on teaching the model to generate syntactically correct SQL while maintaining the semantic meaning of the original question.
+
 ## Screenshots
 
 ### Azure ML Pipeline
+
 ![Azure ML Pipeline](https://github.com/BharathiVetukuri/RetailGenie/blob/main/assets/images/AZURESS1.png)
-*Screenshot shows our successfully deployed Azure ML pipeline with connected dataset and training steps*
+_Screenshot shows our successfully deployed Azure ML pipeline with connected dataset and training steps_
 
 ### Full-Stack ML Application
+
 ![RetailGenie Dashboard](https://github.com/BharathiVetukuri/RetailGenie/blob/main/assets/images/SS1.png)
-*Main dashboard of the RetailGenie application showing the query interface and visualization panel*
+_Main dashboard of the RetailGenie application showing the query interface and visualization panel_
 
 ![Query Processing](https://github.com/BharathiVetukuri/RetailGenie/blob/main/assets/images/SS2.png)
-*Natural language query being processed by our model with SQL generation*
+_Natural language query being processed by our model with SQL generation_
 
 ![Data Visualization](https://github.com/BharathiVetukuri/RetailGenie/blob/main/assets/images/SS3.png)
-*Interactive visualization of query results with charts and insights*
+_Interactive visualization of query results with charts and insights_
 
 ![Model Performance](https://github.com/BharathiVetukuri/RetailGenie/blob/main/assets/images/SS4.png)
-*Performance metrics and model evaluation dashboard*
-
+_Performance metrics and model evaluation dashboard_
 
 ## 📊 Dataset Sample
 
