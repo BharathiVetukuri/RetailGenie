@@ -23,20 +23,6 @@ RetailGenie is an end-to-end deep learning + MLOps project that allows retail ma
 - Real-time inference + chart generation
 - BLEU, accuracy, confusion matrix visualizations
 
-## Project Artifacts
-
-**Youtube Video Link**: https://youtu.be/YXPZawbxc3s
-
-**Colab Link**:
-
-**Project Report Link**: https://docs.google.com/document/d/1DFvYuQQcZ2NcxfbIaWllHvJqroN-yr1INOVunanDdl8/edit?tab=t.0
-
-**Slide Deck Link**: https://prezi.com/view/IsYkiUo37RbUuPnNzC5f/
-
-## Screenshots
-
-All our project artifacts and application related screenshots are present in this folder:
-
 ## 📊 Dataset Sample
 
 See `data/retail_dataset.csv` and `data/retail_schema.sql`
@@ -92,6 +78,10 @@ This will start the Gradio web interface where you can ask retail questions and 
 
 The model files are not included in this repository. You must train the models (steps 3-4) before running the application.
 
+## 🤖 Team Contributions
+
+To be filled...
+
 ---
 
 ## ⚙️ Setup Instructions
@@ -102,7 +92,7 @@ The model files are not included in this repository. You must train the models (
 - GCP project with Vertex AI + Artifact Registry enabled
 - Google Cloud SDK installed + authenticated:
 
-````bash
+```bash
 gcloud auth application-default login
 gcloud config set project YOUR_PROJECT_ID
 
@@ -173,137 +163,4 @@ Deploy with traffic split
 ## 🔗 Endpoints will be created in Vertex AI
 You can find them under:
 https://console.cloud.google.com/vertex-ai/endpoints
-
-# RetailGenie CI/CD to Azure ML
-
-This repository contains code that trains and deploys a model to Azure Machine Learning as part of a CI/CD pipeline using GitHub Actions.
-
-## Architecture
-
-This project implements a modern MLOps approach:
-
-1. **CI/CD with GitHub Actions**: The model is trained, tested, and deployed automatically when code is pushed.
-2. **Model Training**: A simple model is trained directly in the GitHub Actions workflow.
-3. **Model Registration**: The trained model is registered in the Azure ML Model Registry.
-4. **Model Deployment**: The model is deployed as an Azure Container Instance (ACI) endpoint.
-5. **Endpoint Testing**: The deployed endpoint is tested to ensure it's working correctly.
-
-## Screenshots
-
-### Azure ML Pipeline
-![Azure ML Pipeline](Pictures/AZURESS1.png)
-*Screenshot shows our successfully deployed Azure ML pipeline with connected dataset and training steps*
-
-### Full-Stack ML Application
-![RetailGenie Dashboard](Pictures/SS1.png)
-*Main dashboard of the RetailGenie application showing the query interface and visualization panel*
-
-![Query Processing](Pictures/SS2.png)
-*Natural language query being processed by our model with SQL generation*
-
-![Data Visualization](Pictures/SS3.png)
-*Interactive visualization of query results with charts and insights*
-
-![Model Performance](Pictures/SS4.png)
-*Performance metrics and model evaluation dashboard*
-
-## Setup
-
-### Prerequisites
-
-To use this pipeline, you need:
-
-1. An Azure subscription
-2. An Azure Machine Learning workspace
-3. GitHub repository with GitHub Actions enabled
-
-### GitHub Secrets
-
-You need to set up the following secrets in your GitHub repository:
-
-- `AZURE_CREDENTIALS`: Service principal credentials for Azure authentication
-- `AZURE_SUBSCRIPTION_ID`: Your Azure subscription ID
-
-### Creating Azure Service Principal
-
-1. Create a service principal with contributor access to your Azure ML workspace:
-
-```bash
-az ad sp create-for-rbac --name "retailgenie-sp" --role contributor \
-                         --scopes /subscriptions/{subscription-id}/resourceGroups/{resource-group} \
-                         --sdk-auth
-````
-
-2. Use the output JSON as the value for the `AZURE_CREDENTIALS` secret in GitHub.
-
-## Workflow
-
-The GitHub Actions workflow performs the following steps:
-
-1. **Environment Setup**: Sets up Python and installs necessary packages
-2. **Model Training**: Trains a RandomForest classifier on sample data
-3. **Model Registration**: Registers the trained model in Azure ML
-4. **Scoring Script Creation**: Creates a scoring script for model deployment
-5. **Model Deployment**: Deploys the model as an ACI endpoint
-6. **Endpoint Testing**: Tests the deployed endpoint with sample data
-
-## Viewing Results
-
-After the workflow runs successfully:
-
-1. **Models**: View your registered models in Azure ML Studio under "Models"
-2. **Endpoints**: Access your deployed models under "Endpoints"
-
-## Customization
-
-To customize the workflow:
-
-1. Replace the sample model training code with your own training script
-2. Adjust the scoring script to match your model's requirements
-3. Modify deployment configurations as needed
-
-## Manual Execution
-
-You can manually trigger the workflow from the GitHub Actions tab using the "workflow_dispatch" event.
-
-## Team Members and Contributions
-
-**Soumya Bharathi Vetukuri**
-
-Key Contributions:
-
-- Designed the overall Azure ML pipeline architecture for training and deployment
-- Created and deployed Azure ML pipelines for model training and registration
-- Implemented GitHub Actions CI/CD workflow for automated deployment
-- Troubleshot MLOps errors and validated pipeline success criteria
-- Integrated Azure ML endpoints with the application
-
-**Shubham Jaysukhbhai Kothiya**
-
-Key Contributions:
-
-- Preprocessed and curated the retail Q&A dataset
-- Implemented train_sqlgen_t5.py using Hugging Face T5 for natural language to SQL generation
-- Wrote train_intent_classifier.py using DistilBERT for intent classification
-- Tuned model hyperparameters, added tokenization logic, and structured Hugging Face Trainer configs
-- Managed local training experiments and transitioned models to Azure ML
-
-**Rutuja Patil**
-
-Key Contributions:
-
-- Set up Azure ML environments and compute clusters
-- Configured scoring scripts and deployment configurations
-- Debugged container runtime failures in Azure ML
-- Integrated Azure storage for model outputs
-- Ensured proper authentication within Azure services
-
-**Yugm Patel**
-
-Key Contributions:
-
-- Developed the deploy_model.py script for deploying trained models to Azure ML
-- Handled model registration and endpoint creation logic
-- Set up environment-level authentication using service principals
-- Created interactive dashboards for model monitoring
-- Implemented and tested the full-stack application UI
+```

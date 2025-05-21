@@ -45,7 +45,6 @@ def create_dummy_training_script(script_name):
 import argparse
 import os
 import pandas as pd
-import time
 from azureml.core import Run
 
 def main():
@@ -65,36 +64,42 @@ def main():
     # Create output directory if it doesn't exist
     os.makedirs(args.output_dir, exist_ok=True)
     
-    # Create tiny dummy data instead of loading from dataset
-    print("Creating minimal dummy data...")
-    df = pd.DataFrame({
-        'text': ['Simple query 1', 'Simple query 2'],
-        'label': ['SELECT * FROM products', 'SELECT * FROM customers']
-    })
-    print(f"Created dataset with {len(df)} records")
+    # Simulate loading data
+    print("Loading data...")
+    try:
+        # Try to load data from the input dataset
+        dataset = run.input_datasets['sqlgen_data']
+        df = dataset.to_pandas_dataframe()
+        print(f"Loaded {len(df)} records from dataset")
+    except Exception as e:
+        print(f"Could not load dataset: {str(e)}")
+        print("Creating dummy data instead")
+        # Create dummy data
+        df = pd.DataFrame({
+            'text': ['Sample query 1', 'Sample query 2', 'Sample query 3'],
+            'label': ['SELECT * FROM products', 'SELECT * FROM customers', 'SELECT * FROM orders']
+        })
     
-    # Very quick simulated training
-    print("Training model (fast mode)...")
+    # Simulate training
+    print("Training model...")
     run.log("training_progress", 25)
-    time.sleep(5)  # Just wait 5 seconds
     
     # Log metrics
     run.log("accuracy", 0.85)
     run.log("f1_score", 0.82)
     
     run.log("training_progress", 50)
-    time.sleep(5)  # Another 5 seconds
     
-    # Create small model file
+    # Simulate saving model
     model_path = os.path.join(args.output_dir, "model.txt")
     with open(model_path, "w") as f:
-        f.write("This is a minimal dummy model file")
+        f.write("This is a dummy model file")
     
     print(f"Model saved to {model_path}")
     run.log("training_progress", 100)
     
     # Finish
-    print("Training completed successfully - fast mode")
+    print("Training completed successfully")
     run.log("training_status", "completed")
     
 if __name__ == "__main__":
@@ -104,7 +109,7 @@ if __name__ == "__main__":
     with open(script_name, "w") as f:
         f.write(dummy_script)
 
-    logger.info(f"Fast dummy training script created at {script_name}")
+    logger.info(f"Dummy training script created at {script_name}")
 
 
 def main():
