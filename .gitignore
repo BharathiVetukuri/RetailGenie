@@ -6,7 +6,6 @@ results_intent/
 results_t5_sqlgen/
 logs/
 logs_intent/
-*.png
 .venv/
 __pycache__/
 *.pyc
