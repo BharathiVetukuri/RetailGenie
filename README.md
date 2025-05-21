@@ -23,6 +23,20 @@ RetailGenie is an end-to-end deep learning + MLOps project that allows retail ma
 - Real-time inference + chart generation
 - BLEU, accuracy, confusion matrix visualizations
 
+## Project Artifacts
+
+**Youtube Video Link**: https://youtu.be/YXPZawbxc3s 
+
+**Colab Link**:
+
+**Project Report Link**:
+
+**Slide Deck Link**:
+
+## Screenshots
+
+All our project artifacts and application related screenshots are present in this folder: 
+
 ## 📊 Dataset Sample
 
 See `data/retail_dataset.csv` and `data/retail_schema.sql`
@@ -239,3 +253,61 @@ To customize the pipeline for your specific needs:
 ```
 
 ```
+
+## Team Members and Contributions
+
+**Soumya Bharathi Vetukuri**
+
+Key Contributions:
+
+* Designed the overall Vertex AI pipeline architecture for training and deployment
+
+* Wrote pipeline.py and integrated all pipeline steps (T5 training, Intent Classifier training, and deployment)
+
+* Implemented and tested submit_pipeline.py and compile_pipeline.py
+
+* Troubleshot MLOps errors including auth scopes, GCS pathing, and container failures
+
+* Validated success criteria for pipeline completion and GCS model outputs
+
+**Shubham Jaysukhbhai Kothiya**
+
+Key Contributions:
+
+* Preprocessed and curated the retail Q&A dataset
+
+* Implemented train_sqlgen_t5.py using Hugging Face T5 for natural language to SQL generation
+
+* Wrote train_intent_classifier.py using DistilBERT for intent classification
+
+* Tuned model hyperparameters, added tokenization logic, and structured Hugging Face Trainer configs
+
+* Managed local training experiments and transitioned models to cloud containers
+
+**Rutuja Patil**
+
+Key Contributions:
+
+* Designed Dockerfiles for all three containers: train-sqlgen, train-intent, and deploy
+
+* Managed Artifact Registry and pushed all container images using docker build and docker push
+
+* Debugged container runtime failures (e.g., missing packages like gcsfs, sentencepiece)
+
+* Integrated GCS upload logic into the training scripts using google-cloud-storage
+
+* Ensured containers authenticated properly inside Vertex AI jobs
+
+**Yugm Patel**
+
+Key Contributions:
+
+* Developed the local deploy_from_local.py script for deploying trained models to Vertex AI
+
+* Handled aiplatform.Model.upload() and Endpoint.create() logic
+
+* Set up environment-level authentication using ADC and verified GCP permissions
+
+* Verified endpoint creation and tested response handling
+
+
