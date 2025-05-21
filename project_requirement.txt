@@ -1,0 +1,59 @@
+📑 Project Deliverables
+End-to-end ML or ML Ops pipeline with:
+ The core defining the model - code should be substantial  (if the model definition is just 10 - 50
+ lines  - something wrong - 50% of score is based on how complex the problem you are solving
+ and how complex your model or combination of models are) and is the meat of the project. Your
+ model architecture, training loop, etc.,
+
+
+
+ Do not try to risk having  projects requiring large number of gpus/tpus - show case it on very
+ small data set. extra points if you train your project on tpu.
+
+ 
+
+Model training
+
+Evaluation
+
+Inference
+
+Deployment
+
+Visualization of metrics (20% of grade)
+Use of Gradio UI
+Use MLOps platforms: databricks+azure
+Encourage use of:
+
+TensorBoard
+
+CI/CD
+
+Monitoring and drift detection
+
+Auto retraining and auto deployment
+
+
+💰 Bonus Criteria (Up to +10% Extra Points)
+Deploying on:
+
+Databricks pipeline
+Demonstrate:
+
+Auto push & deploy pipelines
+
+Full-stack MLOps with:
+
+CI/CD
+
+Monitoring
+
+Auto retraining
+
+Reach MLOps Maturity Level 4:
+
+Automated operations
+
+Centralized metrics
+
+Production readiness

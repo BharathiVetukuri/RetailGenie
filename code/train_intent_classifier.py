@@ -1,14 +1,15 @@
 import pandas as pd
 import os
 import argparse
-import shutil
-import tempfile
 import json
-from google.cloud import storage
-from transformers import DistilBertTokenizerFast, DistilBertForSequenceClassification, Trainer, TrainingArguments
+from transformers import (
+    DistilBertTokenizerFast,
+    DistilBertForSequenceClassification,
+    Trainer,
+    TrainingArguments,
+)
 from datasets import Dataset
 from sklearn.preprocessing import LabelEncoder
-import torch
 
 # CLI arguments
 parser = argparse.ArgumentParser()
@@ -29,11 +30,17 @@ dataset = Dataset.from_pandas(df)
 
 # Tokenizer and model
 model_name = "distilbert-base-uncased"
-tokenizer = DistilBERTTokenizerFast.from_pretrained(model_name)
-model = DistilBertForSequenceClassification.from_pretrained(model_name, num_labels=len(label_mapping))
+tokenizer = DistilBertTokenizerFast.from_pretrained(model_name)
+model = DistilBertForSequenceClassification.from_pretrained(
+    model_name, num_labels=len(label_mapping)
+)
+
 
 def tokenize(example):
-    return tokenizer(example["question"], truncation=True, padding="max_length", max_length=128)
+    return tokenizer(
+        example["question"], truncation=True, padding="max_length", max_length=128
+    )
+
 
 dataset = dataset.map(tokenize)
 
@@ -44,34 +51,18 @@ training_args = TrainingArguments(
     logging_dir="./logs_intent",
     logging_steps=5,
     save_strategy="epoch",
-    evaluation_strategy="no"
+    evaluation_strategy="no",
 )
 
 trainer = Trainer(model=model, args=training_args, train_dataset=dataset)
 trainer.train()
 
-# Save to temp dir
-local_dir = tempfile.mkdtemp()
-model.save_pretrained(local_dir)
-tokenizer.save_pretrained(local_dir)
-
-with open(os.path.join(local_dir, "label_mapping.json"), "w") as f:
-    json.dump(label_mapping, f)
-
-# Upload to GCS
-gcs_model_path = os.path.join(args.output_dir, "intent")
-bucket_name = gcs_model_path.split("/")[2]
-base_path = "/".join(gcs_model_path.split("/")[3:])
-
-client = storage.Client()
-
-for fname in os.listdir(local_dir):
-    local_path = os.path.join(local_dir, fname)
-    gcs_blob_path = os.path.join(base_path, fname)
-
-    print(f"⬆️ Uploading {fname} to gs://{bucket_name}/{gcs_blob_path}")
-    bucket = client.bucket(bucket_name)
-    blob = bucket.blob(gcs_blob_path)
-    blob.upload_from_filename(local_path)
-
-print(f"✅ Intent model successfully uploaded to gs://{bucket_name}/{base_path}")
+# Save model, tokenizer, and label mapping to outputs directory for Azure ML
+os.makedirs("outputs", exist_ok=True)
+model.save_pretrained("outputs")
+tokenizer.save_pretrained("outputs")
+# Convert all values to int for JSON serialization
+label_mapping_int = {k: int(v) for k, v in label_mapping.items()}
+with open(os.path.join("outputs", "label_mapping.json"), "w") as f:
+    json.dump(label_mapping_int, f)
+print("✅ Model, tokenizer, and label mapping saved to outputs/")

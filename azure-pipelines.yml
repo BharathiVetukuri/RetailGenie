@@ -1,0 +1,104 @@
+trigger:
+  branches:
+    include:
+      - main
+      - develop
+  paths:
+    include:
+      - "code/**"
+      - "mlops/**"
+      - "ui/**"
+      - "data/**"
+
+variables:
+  pythonVersion: "3.11"
+  azureSubscription: "your-azure-subscription"
+  resourceGroup: "retailgenie-rg"
+  workspaceName: "retailgenie-workspace"
+  containerRegistry: "retailgenieacr.azurecr.io"
+
+stages:
+  - stage: Build
+    displayName: "Build and Test"
+    jobs:
+      - job: BuildAndTest
+        displayName: "Build and Test"
+        pool:
+          vmImage: "ubuntu-latest"
+        steps:
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: "$(pythonVersion)"
+              addToPath: true
+
+          - script: |
+              python -m pip install --upgrade pip
+              pip install -r requirements.txt
+              pip install pytest pytest-cov
+            displayName: "Install dependencies"
+
+          - script: |
+              pytest tests/ --cov=./ --cov-report=xml
+            displayName: "Run tests"
+
+          - task: PublishTestResults@2
+            inputs:
+              testResultsFormat: "pytest"
+              testResultsFiles: "**/test-results.xml"
+              failTaskOnFailedTests: true
+
+          - task: PublishCodeCoverageResults@1
+            inputs:
+              codeCoverageTool: "Cobertura"
+              summaryFileLocation: "**/coverage.xml"
+              reportDirectory: "**/coverage"
+
+  - stage: Train
+    displayName: "Train Model"
+    dependsOn: Build
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+    jobs:
+      - job: TrainModel
+        displayName: "Train Model"
+        pool:
+          vmImage: "ubuntu-latest"
+        steps:
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: "$(pythonVersion)"
+              addToPath: true
+
+          - script: |
+              python -m pip install --upgrade pip
+              pip install -r requirements.txt
+              python mlops/setup_azure_ml.py
+              python mlops/pipeline.py
+            displayName: "Train model"
+
+  - stage: Deploy
+    displayName: "Deploy to Production"
+    dependsOn: Train
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+    jobs:
+      - job: DeployModel
+        displayName: "Deploy Model"
+        pool:
+          vmImage: "ubuntu-latest"
+        steps:
+          - task: AzureCLI@2
+            inputs:
+              azureSubscription: "$(azureSubscription)"
+              scriptType: "bash"
+              scriptLocation: "inlineScript"
+              inlineScript: |
+                # Login to Azure
+                az login --service-principal -u $(AZURE_CLIENT_ID) -p $(AZURE_CLIENT_SECRET) --tenant $(AZURE_TENANT_ID)
+
+                # Deploy model
+                az ml model deploy \
+                  --name retailgenie-model \
+                  --model-path models/ \
+                  --workspace-name $(workspaceName) \
+                  --resource-group $(resourceGroup) \
+                  --compute-target retailgenie-inference \
+                  --entry-script ui/gradio_app.py

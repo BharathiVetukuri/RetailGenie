@@ -1,0 +1,50 @@
+# Azure Configuration for Free Tier
+azure:
+  # Resource Group
+  resource_group: "retailgenie-rg"
+  location: "eastus" # Choose region with free tier availability
+
+  # Azure ML Workspace
+  workspace:
+    name: "retailgenie-workspace"
+    description: "RetailGenie ML Workspace"
+    storage_account: "retailgeniestorage"
+    key_vault: "retailgenie-kv"
+    application_insights: "retailgenie-ai"
+
+  # Compute Resources (Free Tier Optimized)
+  compute:
+    training:
+      name: "retailgenie-training"
+      type: "ComputeInstance"
+      size: "Standard_DS1_v2" # Free tier eligible
+      min_nodes: 0
+      max_nodes: 1
+    inference:
+      name: "retailgenie-inference"
+      type: "AmlCompute"
+      size: "Standard_DS1_v2" # Free tier eligible
+      min_nodes: 0
+      max_nodes: 1
+
+  # Container Registry (Free Tier)
+  container_registry:
+    name: "retailgenieacr"
+    sku: "Basic" # Free tier eligible
+    admin_enabled: true
+
+  # Storage (Free Tier Optimized)
+  storage:
+    account_name: "retailgeniestorage"
+    sku: "Standard_LRS"
+    kind: "StorageV2"
+
+  # Monitoring
+  monitoring:
+    log_analytics:
+      name: "retailgenie-logs"
+      sku: "Free" # Free tier eligible
+    application_insights:
+      name: "retailgenie-ai"
+      location: "eastus"
+      kind: "web"

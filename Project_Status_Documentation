@@ -1,0 +1,65 @@
+# Project Status Documentation
+
+## 1. Azure Account and Resource Setup
+
+- Created an Azure free trial account.
+- Set up a new resource group: `retailgenie-rg` in East US region.
+
+## 2. Azure Machine Learning Workspace
+
+- Deployed Azure Machine Learning workspace: `retailgenie-workspace`.
+- Linked supporting resources:
+  - Storage Account
+  - Key Vault
+  - Application Insights
+  - Log Analytics Workspace
+
+## 3. Supporting Azure Resources
+
+- Created and configured:
+  - Storage account: `retailgeniewor...` (auto-generated)
+  - Key vault: `retailgeniewor...` (auto-generated)
+  - Application Insights: `retailgeniewor...` (auto-generated)
+  - Log Analytics workspace: `retailgeniewor...` (auto-generated)
+
+## 4. Azure ML Studio Access
+
+- Accessed Azure ML Studio via the workspace overview.
+- Launched the ML Studio web interface for further operations.
+
+## 5. Compute Resource Provisioning
+
+- Navigated to the Compute section in Azure ML Studio.
+- Created a compute instance for development and training:
+  - Name: `retailgenie-training`
+  - VM Size: Standard_DS3_v2 (CPU)
+  - Auto-shutdown enabled for cost control
+
+## 6. (Optional) Compute Cluster
+
+- Provided instructions for creating a compute cluster for scalable training/inference (not mandatory for initial setup).
+
+## 7. Project Readiness
+
+- All core Azure ML infrastructure is now ready for:
+  - Running notebooks and scripts
+  - Training and registering models
+  - Setting up CI/CD pipelines (Azure DevOps, Databricks)
+  - Model deployment and monitoring
+
+---
+
+**Next Steps:**
+
+- Connect local codebase to Azure ML workspace
+- Run test notebooks/scripts on the compute instance
+- Set up CI/CD pipeline for automated training, testing, and deployment
+- Train and register first ML model
+- Deploy model for inference
+- Set up monitoring and alerts
+
+
+
+pip install "numpy<2.0.0"
+pip install "transformers==4.31.0"
+python train_sqlgen_t5.py --dataset_path retail_dataset.csv --output_dir outputs
