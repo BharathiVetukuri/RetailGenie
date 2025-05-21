@@ -16,17 +16,9 @@ jobs:
         with:
           python-version: "3.9"
 
-      - name: Install Azure CLI
-        uses: azure/cli@v1
-
-      - name: Log in to Azure
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
       - name: Install dependencies
         run: |
-          pip install azureml-core azureml-sdk
+          pip install -r requirements.txt
 
       - name: Create CPU compute target
         run: |
