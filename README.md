@@ -25,7 +25,7 @@ RetailGenie is an end-to-end deep learning + MLOps project that allows retail ma
 
 ## Project Artifacts
 
-**Youtube Video Link**: https://youtu.be/YXPZawbxc3s 
+**Youtube Video Link**: https://youtu.be/YXPZawbxc3s
 
 **Colab Link**:
 
@@ -35,7 +35,7 @@ RetailGenie is an end-to-end deep learning + MLOps project that allows retail ma
 
 ## Screenshots
 
-All our project artifacts and application related screenshots are present in this folder: 
+All our project artifacts and application related screenshots are present in this folder:
 
 ## 📊 Dataset Sample
 
@@ -188,6 +188,25 @@ This project implements a modern MLOps approach:
 4. **Model Deployment**: The model is deployed as an Azure Container Instance (ACI) endpoint.
 5. **Endpoint Testing**: The deployed endpoint is tested to ensure it's working correctly.
 
+## Screenshots
+
+### Azure ML Pipeline
+![Azure ML Pipeline](Pictures/AZURESS1.png)
+*Screenshot shows our successfully deployed Azure ML pipeline with connected dataset and training steps*
+
+### Full-Stack ML Application
+![RetailGenie Dashboard](Pictures/SS1.png)
+*Main dashboard of the RetailGenie application showing the query interface and visualization panel*
+
+![Query Processing](Pictures/SS2.png)
+*Natural language query being processed by our model with SQL generation*
+
+![Data Visualization](Pictures/SS3.png)
+*Interactive visualization of query results with charts and insights*
+
+![Model Performance](Pictures/SS4.png)
+*Performance metrics and model evaluation dashboard*
+
 ## Setup
 
 ### Prerequisites
@@ -247,64 +266,44 @@ To customize the workflow:
 
 You can manually trigger the workflow from the GitHub Actions tab using the "workflow_dispatch" event.
 
-```
-
-```
-
 ## Team Members and Contributions
 
 **Soumya Bharathi Vetukuri**
 
 Key Contributions:
 
-* Designed the overall Vertex AI pipeline architecture for training and deployment
-
-* Wrote pipeline.py and integrated all pipeline steps (T5 training, Intent Classifier training, and deployment)
-
-* Implemented and tested submit_pipeline.py and compile_pipeline.py
-
-* Troubleshot MLOps errors including auth scopes, GCS pathing, and container failures
-
-* Validated success criteria for pipeline completion and GCS model outputs
+- Designed the overall Azure ML pipeline architecture for training and deployment
+- Created and deployed Azure ML pipelines for model training and registration
+- Implemented GitHub Actions CI/CD workflow for automated deployment
+- Troubleshot MLOps errors and validated pipeline success criteria
+- Integrated Azure ML endpoints with the application
 
 **Shubham Jaysukhbhai Kothiya**
 
 Key Contributions:
 
-* Preprocessed and curated the retail Q&A dataset
-
-* Implemented train_sqlgen_t5.py using Hugging Face T5 for natural language to SQL generation
-
-* Wrote train_intent_classifier.py using DistilBERT for intent classification
-
-* Tuned model hyperparameters, added tokenization logic, and structured Hugging Face Trainer configs
-
-* Managed local training experiments and transitioned models to cloud containers
+- Preprocessed and curated the retail Q&A dataset
+- Implemented train_sqlgen_t5.py using Hugging Face T5 for natural language to SQL generation
+- Wrote train_intent_classifier.py using DistilBERT for intent classification
+- Tuned model hyperparameters, added tokenization logic, and structured Hugging Face Trainer configs
+- Managed local training experiments and transitioned models to Azure ML
 
 **Rutuja Patil**
 
 Key Contributions:
 
-* Designed Dockerfiles for all three containers: train-sqlgen, train-intent, and deploy
-
-* Managed Artifact Registry and pushed all container images using docker build and docker push
-
-* Debugged container runtime failures (e.g., missing packages like gcsfs, sentencepiece)
-
-* Integrated GCS upload logic into the training scripts using google-cloud-storage
-
-* Ensured containers authenticated properly inside Vertex AI jobs
+- Set up Azure ML environments and compute clusters
+- Configured scoring scripts and deployment configurations
+- Debugged container runtime failures in Azure ML
+- Integrated Azure storage for model outputs
+- Ensured proper authentication within Azure services
 
 **Yugm Patel**
 
 Key Contributions:
 
-* Developed the local deploy_from_local.py script for deploying trained models to Vertex AI
-
-* Handled aiplatform.Model.upload() and Endpoint.create() logic
-
-* Set up environment-level authentication using ADC and verified GCP permissions
-
-* Verified endpoint creation and tested response handling
-
-
+- Developed the deploy_model.py script for deploying trained models to Azure ML
+- Handled model registration and endpoint creation logic
+- Set up environment-level authentication using service principals
+- Created interactive dashboards for model monitoring
+- Implemented and tested the full-stack application UI
