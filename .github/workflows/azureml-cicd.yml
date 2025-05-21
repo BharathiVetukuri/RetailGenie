@@ -14,19 +14,16 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.9"
+          python-version: "3.11"
 
       - name: Install dependencies
         run: |
+          pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Create CPU compute target
+      - name: Train SQL Generator Model
         run: |
-          python create_compute.py
-
-      - name: Run Azure ML pipeline
-        run: |
-          python run_pipeline.py
+          python code/train_sqlgen_t5_local.py
 
       # Optional: Deploy model as web service if you have a deployment script
       # - name: Deploy model
