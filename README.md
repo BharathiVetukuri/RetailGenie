@@ -29,7 +29,7 @@ RetailGenie is an end-to-end deep learning + MLOps project that allows retail ma
 
 **Colab Link**:
 
-**Project Report Link**:
+**Project Report Link**: https://docs.google.com/document/d/1DFvYuQQcZ2NcxfbIaWllHvJqroN-yr1INOVunanDdl8/edit?tab=t.0
 
 **Slide Deck Link**:
 
