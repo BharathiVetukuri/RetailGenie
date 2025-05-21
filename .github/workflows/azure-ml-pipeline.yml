@@ -1,0 +1,100 @@
+name: Azure ML Pipeline CI/CD
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy-to-azure:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.8"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install azureml-sdk azureml-pipeline-core azure-identity azure-mgmt-resource
+
+      - name: Set up Azure credentials
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Create Azure ML config directory
+        run: |
+          mkdir -p .azureml
+
+      - name: Create config.json
+        run: |
+          echo '{
+            "subscription_id": "${{ secrets.AZURE_SUBSCRIPTION_ID }}",
+            "resource_group": "retailgenie-rg",
+            "workspace_name": "retailgenie-workspace"
+          }' > .azureml/config.json
+
+      - name: Deploy and run Azure ML pipeline
+        id: run_pipeline
+        run: |
+          PIPELINE_ID=$(python run_pipeline.py)
+          echo "PIPELINE_ID=${PIPELINE_ID}" >> $GITHUB_ENV
+          echo "::set-output name=pipeline_id::${PIPELINE_ID}"
+
+      - name: Wait for pipeline completion (10 minutes max)
+        run: |
+          python -c "
+          from azureml.core import Workspace
+          from azureml.pipeline.core import PipelineRun
+          import time
+
+          ws = Workspace.from_config()
+          pipeline_run = PipelineRun(ws, '${{ steps.run_pipeline.outputs.pipeline_id }}')
+
+          timeout = 600  # 10 minutes
+          start_time = time.time()
+
+          while time.time() - start_time < timeout:
+              status = pipeline_run.get_status()
+              print(f'Pipeline status: {status}')
+              
+              if status in ['Completed', 'Failed']:
+                  break
+                  
+              time.sleep(30)  # Check every 30 seconds
+              
+          if status == 'Completed':
+              print('Pipeline completed successfully!')
+              exit(0)
+          else:
+              print('Pipeline did not complete successfully within timeout')
+              exit(1)
+          "
+
+      - name: Register model
+        if: success()
+        run: |
+          python register_model.py \
+            --run_id ${{ steps.run_pipeline.outputs.pipeline_id }} \
+            --model_path "outputs/model" \
+            --model_name "sqlgen-model"
+
+      - name: Deploy model as endpoint
+        if: success()
+        run: |
+          python deploy_model.py \
+            --model_name "sqlgen-model" \
+            --model_version 1 \
+            --entry_script "score.py"
+
+      - name: Report completion
+        if: success()
+        run: |
+          echo "Azure ML pipeline has been deployed and model is now available as an endpoint"
+          echo "You can view the pipeline in Azure ML Studio under Pipelines"
+          echo "You can view the deployed model under Endpoints"

@@ -1,45 +1,86 @@
-from azureml.core import Workspace, Dataset
+from azureml.core import Workspace
+from azureml.data.dataset_factory import TabularDatasetFactory
+import logging
 import os
+
+# Set up logging
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger(__name__)
 
 
 def register_dataset():
-    # Get workspace
-    ws = Workspace.from_config()
-    print("Connected to workspace:", ws.name)
-
+    """Register a dataset in Azure ML workspace."""
     try:
-        # Get or create default datastore
-        default_datastore = ws.get_default_datastore()
-        print(f"Using datastore: {default_datastore.name}")
+        # Connect to workspace
+        logger.info("Connecting to workspace...")
+        ws = Workspace.from_config()
+        logger.info(f"Connected to workspace: {ws.name}")
 
-        # Upload the dataset to the datastore
-        data_path = os.path.join("data", "testing_sql_data.csv")
-        target_path = "retail_data"
-
-        # Upload the file to the datastore
-        default_datastore.upload_files(
-            files=[data_path], target_path=target_path, overwrite=True
+        # Ask for dataset details
+        csv_path = (
+            input("Enter local path to CSV file (default: data/retail_data.csv): ")
+            or "data/retail_data.csv"
         )
-        print(f"Uploaded dataset to {target_path}")
-
-        # Create a FileDataset from the datastore
-        dataset = Dataset.File.from_files(
-            path=(default_datastore, os.path.join(target_path, "testing_sql_data.csv"))
+        dataset_name = (
+            input("Enter dataset name (default: retail_dataset): ") or "retail_dataset"
+        )
+        dataset_desc = (
+            input("Enter dataset description (optional): ")
+            or "Retail data for RetailGenie"
         )
 
-        # Register the dataset
+        # Check if file exists
+        if not os.path.exists(csv_path):
+            logger.error(f"File not found: {csv_path}")
+            return
+
+        # Get default datastore
+        datastore = ws.get_default_datastore()
+        logger.info(f"Using default datastore: {datastore.name}")
+
+        # Upload file to datastore
+        logger.info(f"Uploading {csv_path} to datastore...")
+        datastore.upload_files(
+            files=[csv_path],
+            target_path="datasets/retail_data",
+            overwrite=True,
+            show_progress=True,
+        )
+
+        # Create dataset from datastore path
+        datastore_path = datastore.path(
+            f"datasets/retail_data/{os.path.basename(csv_path)}"
+        )
+        logger.info(f"Creating dataset from {datastore_path}...")
+
+        # Create tabular dataset
+        dataset = TabularDatasetFactory.from_delimited_files(
+            path=datastore_path,
+            validate=True,
+            include_path=False,
+            infer_column_types=True,
+            set_column_types=None,
+        )
+
+        # Register dataset
         dataset = dataset.register(
             workspace=ws,
-            name="retail_dataset",
-            description="Retail dataset for SQL generation and intent classification",
+            name=dataset_name,
+            description=dataset_desc,
             create_new_version=True,
         )
 
-        print(f"Dataset registered successfully: {dataset.name}")
-        print(f"Dataset version: {dataset.version}")
+        logger.info(f"Dataset registered: {dataset.name}, version: {dataset.version}")
+        logger.info(
+            "You can view this dataset in Azure ML Studio under Data → Datasets"
+        )
+
+        return dataset
 
     except Exception as e:
-        print(f"Error registering dataset: {str(e)}")
+        logger.error(f"Error registering dataset: {str(e)}")
         raise
 
 

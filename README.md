@@ -92,7 +92,7 @@ To be filled...
 - GCP project with Vertex AI + Artifact Registry enabled
 - Google Cloud SDK installed + authenticated:
 
-```bash
+````bash
 gcloud auth application-default login
 gcloud config set project YOUR_PROJECT_ID
 
@@ -163,4 +163,79 @@ Deploy with traffic split
 ## 🔗 Endpoints will be created in Vertex AI
 You can find them under:
 https://console.cloud.google.com/vertex-ai/endpoints
+
+# RetailGenie Azure ML CI/CD Pipeline
+
+This repository contains a CI/CD pipeline that automates the deployment of RetailGenie models to Azure Machine Learning.
+
+## Pipeline Architecture
+
+The CI/CD pipeline automates the following steps:
+
+1. **Training Pipeline Submission**: Submits a pipeline to Azure ML that trains the RetailGenie models.
+2. **Model Registration**: Registers the trained models in Azure ML Model Registry.
+3. **Model Deployment**: Deploys the trained models as endpoints for inference.
+
+## Components
+
+- **run_pipeline.py**: Defines and submits the Azure ML pipeline.
+- **register_model.py**: Registers trained models in Azure ML.
+- **deploy_model.py**: Deploys registered models as endpoints.
+- **score.py**: Scoring script used for model inference.
+- **.github/workflows/azure-ml-pipeline.yml**: GitHub Actions workflow that orchestrates the CI/CD process.
+
+## Requirements
+
+To use this CI/CD pipeline, you need:
+
+1. An Azure subscription
+2. Azure ML workspace ("retailgenie-workspace")
+3. Azure resource group ("retailgenie-rg")
+4. Compute target set up in Azure ML ("retailgenie-cluster")
+5. GitHub repository with the proper Azure credentials set up as secrets
+
+## GitHub Secrets Required
+
+The following secrets need to be set up in your GitHub repository:
+
+- `AZURE_CREDENTIALS`: Service principal credentials for Azure authentication
+- `AZURE_SUBSCRIPTION_ID`: Azure subscription ID
+- `AZURE_CLIENT_ID`: Service principal client ID
+- `AZURE_CLIENT_SECRET`: Service principal client secret
+- `AZURE_TENANT_ID`: Azure tenant ID
+
+## How to Set Up Azure Service Principal
+
+1. Create a service principal with contributor access to your Azure ML workspace:
+
+```bash
+az ad sp create-for-rbac --name "retailgenie-sp" --role contributor \
+                         --scopes /subscriptions/{subscription-id}/resourceGroups/{resource-group} \
+                         --sdk-auth
+````
+
+2. Use the output JSON as the value for the `AZURE_CREDENTIALS` secret in GitHub.
+
+## Viewing Results in Azure ML
+
+After the pipeline runs successfully:
+
+1. **Pipelines**: View your pipeline runs in Azure ML Studio under "Pipelines".
+2. **Models**: Find your registered models under "Models".
+3. **Endpoints**: Access your deployed models under "Endpoints".
+
+## Manual Execution
+
+You can manually trigger the CI/CD pipeline from the GitHub Actions tab using the "workflow_dispatch" event.
+
+## Customization
+
+To customize the pipeline for your specific needs:
+
+1. Modify `run_pipeline.py` to adjust training parameters or steps.
+2. Update `score.py` to match your model's input/output requirements.
+3. Edit `.github/workflows/azure-ml-pipeline.yml` to change the CI/CD workflow.
+
+```
+
 ```
