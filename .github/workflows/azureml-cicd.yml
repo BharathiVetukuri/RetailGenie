@@ -21,6 +21,10 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Run tests
+        run: |
+          pytest tests/
+
       - name: Train SQL Generator Model
         run: |
           python code/train_sqlgen_t5_local.py
