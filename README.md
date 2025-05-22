@@ -22,8 +22,11 @@ RetailGenie is an end-to-end deep learning + MLOps project that allows retail ma
 - Full CI/CD and auto-deploy with Vertex AI or Databricks
 - Real-time inference + chart generation
 - BLEU, accuracy, confusion matrix visualizations
+---
+- Youtube Video Link : https://youtu.be/YXPZawbxc3s
+- Report Link : https://docs.google.com/document/d/1DFvYuQQcZ2NcxfbIaWllHvJqroN-yr1INOVunanDdl8/edit?tab=t.0
+- Slide Share : https://prezi.com/view/IsYkiUo37RbUuPnNzC5f/
 
-## Youtube Video Link : https://youtu.be/YXPZawbxc3s
 
 ## 🤖 Model Training & Datasets
 
@@ -201,54 +204,54 @@ https://console.cloud.google.com/vertex-ai/endpoints
 
 **Soumya Bharathi Vetukuri**
 
-Key Contributions:
+- Key Contributions:
 
-Designed the overall Vertex AI pipeline architecture for training and deployment
+  - Designed the overall Vertex AI pipeline architecture for training and deployment
 
-Wrote pipeline.py and integrated all pipeline steps (T5 training, Intent Classifier training, and deployment)
+  - Wrote pipeline.py and integrated all pipeline steps (T5 training, Intent Classifier training, and deployment)
 
-Implemented and tested submit_pipeline.py and compile_pipeline.py
+  - Implemented and tested submit_pipeline.py and compile_pipeline.py
 
-Troubleshot MLOps errors including auth scopes, GCS pathing, and container failures
+  - Troubleshot MLOps errors including auth scopes, GCS pathing, and container failures
 
 Validated success criteria for pipeline completion and GCS model outputs
 
-Shubham Jaysukhbhai Kothiya
+**Shubham Jaysukhbhai Kothiya**
 
-Key Contributions:
+- Key Contributions:
 
-Preprocessed and curated the retail Q&A dataset
+- Preprocessed and curated the retail Q&A dataset
 
-Implemented train_sqlgen_t5.py using Hugging Face T5 for natural language to SQL generation
+- Implemented train_sqlgen_t5.py using Hugging Face T5 for natural language to SQL generation
 
-Wrote train_intent_classifier.py using DistilBERT for intent classification
+- Wrote train_intent_classifier.py using DistilBERT for intent classification
 
-Tuned model hyperparameters, added tokenization logic, and structured Hugging Face Trainer configs
+- Tuned model hyperparameters, added tokenization logic, and structured Hugging Face Trainer configs
 
-Managed local training experiments and transitioned models to cloud containers
+- Managed local training experiments and transitioned models to cloud containers
 
-Rutuja Patil
+**Rutuja Patil**
 
-Key Contributions:
+- Key Contributions:
 
-Designed Dockerfiles for all three containers: train-sqlgen, train-intent, and deploy
+- Designed Dockerfiles for all three containers: train-sqlgen, train-intent, and deploy
 
-Managed Artifact Registry and pushed all container images using docker build and docker push
+- Managed Artifact Registry and pushed all container images using docker build and docker push
 
-Debugged container runtime failures (e.g., missing packages like gcsfs, sentencepiece)
+- Debugged container runtime failures (e.g., missing packages like gcsfs, sentencepiece)
 
-Integrated GCS upload logic into the training scripts using google-cloud-storage
+- Integrated GCS upload logic into the training scripts using google-cloud-storage
 
-Ensured containers authenticated properly inside Vertex AI jobs
+- Ensured containers authenticated properly inside Vertex AI jobs
 
-Yugm Patel
+**Yugm Patel**
 
-Key Contributions:
+- Key Contributions:
 
-Developed the local deploy_from_local.py script for deploying trained models to Vertex AI
+- Developed the local deploy_from_local.py script for deploying trained models to Vertex AI
 
-Handled aiplatform.Model.upload() and Endpoint.create() logic
+- Handled aiplatform.Model.upload() and Endpoint.create() logic
 
-Set up environment-level authentication using ADC and verified GCP permissions
+- Set up environment-level authentication using ADC and verified GCP permissions
 
-Verified endpoint creation and tested response handling
+- Verified endpoint creation and tested response handling
